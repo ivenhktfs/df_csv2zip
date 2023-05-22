@@ -1,0 +1,33 @@
+import os
+import csv
+import json
+
+all_intents = os.listdir('intents')
+
+
+with open('agent.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Response", "Questions"])
+    for intent in all_intents:
+        write = []
+        if intent.find('_usersays_en.json') == -1:
+            try:
+                with open('intents/' + intent) as f:
+                    data = json.load(f)
+                    resp = ''
+                    try:
+                        resp = data['responses'][0]['messages'][0]['speech'][0]
+                    except:
+                        print(intent)
+                    write.append(resp)
+            except:
+                print(intent)
+            try:
+                with open('intents/' + intent.replace(".json", "") + '_usersays_en.json') as f:
+                    data = json.load(f)
+                    for d in data:
+                        qn = (d['data'][0]['text'])
+                        write.append(qn)
+            except:
+                print(intent.replace(".json", "") + '_usersays_en.json')
+            writer.writerow(write)
